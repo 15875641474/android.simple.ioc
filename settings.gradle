@@ -1,0 +1,3 @@
+include ':app'
+include ':lib.annotation.process'
+include ':lib.annotation'

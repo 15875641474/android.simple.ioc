@@ -1,0 +1,36 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 27
+    defaultConfig {
+        applicationId "laika.ioc.hzc.com.iocforlaika"
+        minSdkVersion 16
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+        buildConfigField 'String', 'INCLUDE_PROJECTS', '"' + getIncludeProjects() + '"'
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    annotationProcessor project(':lib.annotation.process')
+    implementation project(':lib.annotation')
+}
+//返回所有引用的项目名称
+def getIncludeProjects() {
+    println 'getIncludeProjects doing -----------------------------------------------------------'
+    def projects = ""
+    def regEx = '[`~!@#$.<>-]'
+    rootProject.childProjects.each { obj ->
+        projects += obj.key.replaceAll(regEx, '') + ","
+    }
+    return projects.substring(0, projects.length() - 1)
+}
