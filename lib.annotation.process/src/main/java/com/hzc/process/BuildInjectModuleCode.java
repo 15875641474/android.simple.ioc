@@ -38,7 +38,11 @@ public class BuildInjectModuleCode {
                 .addModifiers(Modifier.PUBLIC)
                 .addException(Exception.class)
                 .addParameter(ClassName.get(packageName, className), "activity");
-        for (Element e : fields) {
+        for (int k = 0; k < fields.size(); k++) {
+
+            builder.addCode("{");
+
+            Element e = fields.get(k);
             Map map = e.getAnnotationMirrors().get(0).getElementValues();
 
             builder.addStatement("if($T.getInstance().get($S).contains(\",\")) throw new NullPointerException(\"There are multiple implementations of the $N's Service, and please specify the current implementation class . like @Service(Class)\")"
@@ -61,7 +65,7 @@ public class BuildInjectModuleCode {
                 temp.append("activity.$N = ($N)constructor.newInstance(");
                 boolean doSub = false;
                 for (Object key : map.keySet()) {
-                    if(key.toString().equalsIgnoreCase("params()")){
+                    if (key.toString().equalsIgnoreCase("params()")) {
                         String[] params = map.get(key).toString().replace("\"", "").replace("{", "").replace("}", "").split(",");
                         paramsSize = params.length;
                         for (int i = 0; i < params.length; i++) {
@@ -93,6 +97,9 @@ public class BuildInjectModuleCode {
 
             builder.addStatement("activity.$N = ($N)cls.getConstructors()[0].newInstance()",
                     e.getSimpleName(), e.asType().toString());
+
+
+            builder.addCode("}");
         }
         return builder.build();
     }
